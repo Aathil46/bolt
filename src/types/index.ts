@@ -40,7 +40,7 @@ export interface Material {
   title: string;
   fileName: string;
   fileSize: string;
-  fileType: 'pdf' | 'doc' | 'ppt' | 'image';
+  fileType: 'pdf' | 'doc' | 'docx' | 'txt' | 'ppt' | 'image';
   status: 'processing' | 'extracting' | 'ready' | 'error';
   progress?: number;
   extractedConcepts: string[];
