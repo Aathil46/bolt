@@ -4,11 +4,11 @@ import { PageHeader } from '@/components/shared/StatCard';
 import { Card, CardBody } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Modal } from '@/components/ui/Modal';
-import { Input } from '@/components/ui/Input';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useApp } from '@/context/AppContext';
-import { classes } from '@/data/mockData';
+import { classes as initialClasses } from '@/data/mockData';
+import type { Class } from '@/types';
+import { CreateClassModal } from './components/CreateClassModal';
 import {
   Plus, Users, ClipboardPen, TrendingUp, Copy, Check,
   BookOpen, ArrowRight, Search,
@@ -17,11 +17,12 @@ import {
 export function TeacherClasses() {
   const navigate = useNavigate();
   const { user } = useApp();
+  const [classList, setClassList] = useState<Class[]>(initialClasses);
   const [showCreate, setShowCreate] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-  const myClasses = classes.filter(c => c.teacherId === user.id);
+  const myClasses = classList.filter(c => c.teacherId === user.id);
   const filtered = myClasses.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.subject.toLowerCase().includes(search.toLowerCase())
@@ -121,32 +122,13 @@ export function TeacherClasses() {
         </div>
       )}
 
-      <Modal
+      <CreateClassModal
         open={showCreate}
         onClose={() => setShowCreate(false)}
-        title="Create New Class"
-        description="Set up a new class for your students to join."
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button onClick={() => setShowCreate(false)}>Create Class</Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <Input label="Class Name" placeholder="e.g., Algebra II - Period 3" />
-          <Input label="Subject" placeholder="e.g., Mathematics" />
-          <div className="grid grid-cols-2 gap-4">
-            <Input label="Grade Level" placeholder="e.g., Grade 10" />
-            <Input label="Period" placeholder="e.g., Period 3" />
-          </div>
-          <div className="p-3 rounded-lg bg-brand-50 border border-brand-200">
-            <p className="text-xs text-brand-700">
-              A unique join code will be generated automatically. Students can use this code to join your class.
-            </p>
-          </div>
-        </div>
-      </Modal>
+        onClassCreated={(newClass) => {
+          setClassList((prev) => [newClass, ...prev]);
+        }}
+      />
     </div>
   );
 }
