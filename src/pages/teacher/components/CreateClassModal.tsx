@@ -24,8 +24,6 @@ const GRADE_OPTIONS = [
   '12th Grade',
 ] as const;
 
-type DemoState = 'interactive' | 'default' | 'dropdown' | 'filled' | 'error' | 'success';
-
 export function CreateClassModal({ open, onClose, onClassCreated }: CreateClassModalProps) {
   // Form fields
   const [className, setClassName] = useState('');
@@ -43,9 +41,6 @@ export function CreateClassModal({ open, onClose, onClassCreated }: CreateClassM
   const [isSuccess, setIsSuccess] = useState(false);
   const [createdJoinCode, setCreatedJoinCode] = useState('');
   const [copiedCode, setCopiedCode] = useState(false);
-
-  // Demo preview state selector (to easily inspect all 5 Figma states requested)
-  const [demoState, setDemoState] = useState<DemoState>('interactive');
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -97,57 +92,11 @@ export function CreateClassModal({ open, onClose, onClassCreated }: CreateClassM
     setIsSuccess(false);
     setCreatedJoinCode('');
     setCopiedCode(false);
-    setDemoState('interactive');
   };
 
   const handleClose = () => {
     resetToDefault();
     onClose();
-  };
-
-  // State switcher helper for reviewers
-  const applyDemoState = (state: DemoState) => {
-    setDemoState(state);
-    if (state === 'default' || state === 'interactive') {
-      setClassName('');
-      setSubject('');
-      setGradeLevel('');
-      setIsGradeDropdownOpen(false);
-      setTouched({});
-      setShowValidationErrors(false);
-      setIsSuccess(false);
-    } else if (state === 'dropdown') {
-      setClassName('');
-      setSubject('');
-      setGradeLevel('');
-      setIsGradeDropdownOpen(true);
-      setTouched({});
-      setShowValidationErrors(false);
-      setIsSuccess(false);
-    } else if (state === 'filled') {
-      setClassName('8 A');
-      setSubject('Mathematics');
-      setGradeLevel('8th Grade');
-      setIsGradeDropdownOpen(false);
-      setTouched({ className: true, subject: true, gradeLevel: true });
-      setShowValidationErrors(false);
-      setIsSuccess(false);
-    } else if (state === 'error') {
-      setClassName('');
-      setSubject('');
-      setGradeLevel('');
-      setIsGradeDropdownOpen(false);
-      setTouched({ className: true, subject: true, gradeLevel: true });
-      setShowValidationErrors(true);
-      setIsSuccess(false);
-    } else if (state === 'success') {
-      setClassName('8 A');
-      setSubject('Mathematics');
-      setGradeLevel('8th Grade');
-      setIsGradeDropdownOpen(false);
-      setCreatedJoinCode('8A-MAT-7X9K');
-      setIsSuccess(true);
-    }
   };
 
   // Form validity calculations
@@ -227,73 +176,6 @@ export function CreateClassModal({ open, onClose, onClassCreated }: CreateClassM
         className="relative w-full max-w-[460px] rounded-2xl bg-white shadow-soft-lg border border-slate-100 animate-scale-in overflow-visible"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Figma States Quick Preview Bar for review */}
-        <div className="px-5 pt-3 pb-2 bg-slate-50/80 border-b border-slate-100 rounded-t-2xl flex items-center justify-between gap-1 text-2xs">
-          <span className="font-semibold text-slate-500 uppercase tracking-wider text-[10px]">State Preview:</span>
-          <div className="flex items-center gap-1 overflow-x-auto py-0.5">
-            <button
-              type="button"
-              onClick={() => applyDemoState('default')}
-              className={cn(
-                'px-2 py-0.5 rounded text-[11px] font-medium transition-colors whitespace-nowrap',
-                demoState === 'default'
-                  ? 'bg-brand-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-200/60'
-              )}
-            >
-              1. Default
-            </button>
-            <button
-              type="button"
-              onClick={() => applyDemoState('dropdown')}
-              className={cn(
-                'px-2 py-0.5 rounded text-[11px] font-medium transition-colors whitespace-nowrap',
-                demoState === 'dropdown'
-                  ? 'bg-brand-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-200/60'
-              )}
-            >
-              2. Dropdown
-            </button>
-            <button
-              type="button"
-              onClick={() => applyDemoState('filled')}
-              className={cn(
-                'px-2 py-0.5 rounded text-[11px] font-medium transition-colors whitespace-nowrap',
-                demoState === 'filled'
-                  ? 'bg-brand-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-200/60'
-              )}
-            >
-              3. Filled
-            </button>
-            <button
-              type="button"
-              onClick={() => applyDemoState('error')}
-              className={cn(
-                'px-2 py-0.5 rounded text-[11px] font-medium transition-colors whitespace-nowrap',
-                demoState === 'error'
-                  ? 'bg-red-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-200/60'
-              )}
-            >
-              4. Errors
-            </button>
-            <button
-              type="button"
-              onClick={() => applyDemoState('success')}
-              className={cn(
-                'px-2 py-0.5 rounded text-[11px] font-medium transition-colors whitespace-nowrap',
-                demoState === 'success'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-200/60'
-              )}
-            >
-              5. Success
-            </button>
-          </div>
-        </div>
-
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4.5 border-b border-slate-100">
           <h2 className="text-lg font-semibold text-slate-900">
@@ -324,10 +206,7 @@ export function CreateClassModal({ open, onClose, onClassCreated }: CreateClassM
                   type="text"
                   placeholder="e.g., 8 A"
                   value={className}
-                  onChange={(e) => {
-                    setClassName(e.target.value);
-                    if (demoState !== 'interactive') setDemoState('interactive');
-                  }}
+                  onChange={(e) => setClassName(e.target.value)}
                   onBlur={() => setTouched((prev) => ({ ...prev, className: true }))}
                   className={cn(
                     'w-full h-11 px-3.5 rounded-xl border bg-white text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-150',
@@ -355,10 +234,7 @@ export function CreateClassModal({ open, onClose, onClassCreated }: CreateClassM
                   type="text"
                   placeholder="e.g., Mathematics"
                   value={subject}
-                  onChange={(e) => {
-                    setSubject(e.target.value);
-                    if (demoState !== 'interactive') setDemoState('interactive');
-                  }}
+                  onChange={(e) => setSubject(e.target.value)}
                   onBlur={() => setTouched((prev) => ({ ...prev, subject: true }))}
                   className={cn(
                     'w-full h-11 px-3.5 rounded-xl border bg-white text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-150',
@@ -427,7 +303,6 @@ export function CreateClassModal({ open, onClose, onClassCreated }: CreateClassM
                             setGradeLevel(grade);
                             setIsGradeDropdownOpen(false);
                             setTouched((prev) => ({ ...prev, gradeLevel: true }));
-                            if (demoState !== 'interactive') setDemoState('interactive');
                           }}
                           className={cn(
                             'w-full px-3.5 py-2.5 text-left text-sm flex items-center justify-between transition-colors',
