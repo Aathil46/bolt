@@ -12,8 +12,9 @@ import type { Question } from '@/types';
 import {
   Check, ChevronRight, ChevronLeft, Sparkles, FileText,
   ClipboardPen, Clock, Award, Eye, Send, Plus, Trash2,
-  Edit3, CheckCircle2, AlertCircle,
+  Edit3, CheckCircle2, AlertCircle, SlidersHorizontal, Minus,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const steps = [
   { id: 0, label: 'Select Class', icon: FileText },
@@ -31,6 +32,7 @@ export function AssessmentCreate() {
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedMaterial, setSelectedMaterial] = useState('');
   const [config, setConfig] = useState({ title: '', questionCount: 10, duration: 45, passingScore: 70, difficulty: 'mixed' as 'easy' | 'medium' | 'hard' | 'mixed' });
+  const [isCustomDuration, setIsCustomDuration] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [genStep, setGenStep] = useState(0);
   const [generated, setGenerated] = useState(false);
@@ -95,21 +97,35 @@ export function AssessmentCreate() {
       </div>
 
       {/* Stepper */}
-      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-2">
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
         {steps.map((s, i) => (
-          <div key={s.id} className="flex items-center gap-1 flex-shrink-0">
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${
-              i === step ? 'bg-brand-50 text-brand-700 border border-brand-200' :
-              i < step ? 'text-slate-400' : 'text-slate-300'
-            }`}>
-              <div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
-                i === step ? 'bg-brand-500 text-white' :
-                i < step ? 'bg-success-500 text-white' : 'bg-slate-200 text-slate-400'
-              }`}>
-                {i < step ? <Check className="h-3.5 w-3.5" /> : i + 1}
+          <div key={s.id} className="flex items-center gap-2 flex-shrink-0">
+            {i < step ? (
+              <button
+                type="button"
+                onClick={() => setStep(i)}
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded-full text-slate-800 hover:text-slate-900 transition-colors font-semibold text-xs cursor-pointer"
+              >
+                <div className="flex h-5.5 w-5.5 items-center justify-center rounded-full bg-emerald-500 text-white shadow-xs">
+                  <Check className="h-3.5 w-3.5 stroke-[2.5]" />
+                </div>
+                <span>{s.label}</span>
+              </button>
+            ) : i === step ? (
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#2dd4bf] bg-[#f0fdfa] text-[#0d9488] font-bold text-xs shadow-xs">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0d9488] text-white text-xs font-bold">
+                  {i + 1}
+                </div>
+                <span>{s.label}</span>
               </div>
-              <span className="text-xs font-medium hidden sm:inline">{s.label}</span>
-            </div>
+            ) : (
+              <div className="flex items-center gap-2 px-2 py-1 text-slate-400 text-xs font-medium">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-400 text-xs">
+                  {i + 1}
+                </div>
+                <span>{s.label}</span>
+              </div>
+            )}
             {i < steps.length - 1 && <ChevronRight className="h-3.5 w-3.5 text-slate-300 flex-shrink-0" />}
           </div>
         ))}
@@ -188,62 +204,219 @@ export function AssessmentCreate() {
 
           {/* Step 2: Configure */}
           {step === 2 && (
-            <div className="animate-fade-in max-w-lg">
-              <h2 className="text-lg font-semibold text-slate-900 mb-1">Configure Assessment</h2>
-              <p className="text-sm text-slate-500 mb-5">Set the parameters for AI generation.</p>
-              <div className="space-y-4">
+            <div className="animate-fade-in space-y-6">
+              {/* Header with Icon */}
+              <div className="flex items-start gap-3.5 pb-1">
+                <div className="w-11 h-11 rounded-xl bg-[#f0fdfa] text-[#0d9488] border border-[#ccfbf1] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
+                  <SlidersHorizontal className="h-5 w-5" />
+                </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Assessment Title</label>
+                  <h2 className="text-lg font-bold text-slate-900">Configure Assessment</h2>
+                  <p className="text-xs sm:text-sm text-slate-500 mt-0.5 font-normal">
+                    Set the key parameters for your assessment. The AI will use these settings to generate questions.
+                  </p>
+                </div>
+              </div>
+
+              {/* Assessment Title */}
+              <div>
+                <label className="block text-sm font-bold text-slate-900 mb-2">
+                  Assessment Title <span className="text-red-500 font-medium">*</span>
+                </label>
+                <div className="relative">
+                  <FileText className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <input
                     type="text"
                     placeholder="e.g., Quadratic Equations Mastery"
                     value={config.title}
                     onChange={(e) => setConfig({ ...config, title: e.target.value })}
-                    className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20 transition-all"
+                    className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Number of Questions</label>
+              </div>
+
+              {/* Two Column Row 1: Number of Questions & Duration */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Number of Questions Stepper */}
+                <div>
+                  <label className="block text-sm font-bold text-slate-900">
+                    Number of Questions <span className="text-red-500 font-medium">*</span>
+                  </label>
+                  <p className="text-xs text-slate-500 mt-0.5 mb-2.5">
+                    Choose how many questions to include.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setConfig({ ...config, questionCount: Math.max(1, config.questionCount - 1) })}
+                      disabled={config.questionCount <= 1}
+                      className="w-12 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 disabled:opacity-40 flex items-center justify-center transition-colors cursor-pointer"
+                      aria-label="Decrease questions"
+                    >
+                      <Minus className="h-4 w-4 stroke-[2.5]" />
+                    </button>
                     <input
                       type="number"
                       min={1}
                       max={50}
                       value={config.questionCount}
-                      onChange={(e) => setConfig({ ...config, questionCount: parseInt(e.target.value) || 10 })}
-                      className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20 transition-all"
+                      onChange={(e) => setConfig({ ...config, questionCount: Math.max(1, Math.min(50, parseInt(e.target.value) || 1)) })}
+                      className="flex-1 h-11 rounded-xl border border-slate-200 bg-white text-center font-bold text-slate-900 text-base focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setConfig({ ...config, questionCount: Math.min(50, config.questionCount + 1) })}
+                      disabled={config.questionCount >= 50}
+                      className="w-12 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 disabled:opacity-40 flex items-center justify-center transition-colors cursor-pointer"
+                      aria-label="Increase questions"
+                    >
+                      <Plus className="h-4 w-4 stroke-[2.5]" />
+                    </button>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Duration (minutes)</label>
-                    <input
-                      type="number"
-                      min={5}
-                      max={180}
-                      value={config.duration}
-                      onChange={(e) => setConfig({ ...config, duration: parseInt(e.target.value) || 45 })}
-                      className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20 transition-all"
-                    />
+                  <p className="text-xs text-slate-400 mt-2 font-normal">
+                    Recommended: 5 – 50 questions
+                  </p>
+                </div>
+
+                {/* Duration Presets */}
+                <div>
+                  <label className="block text-sm font-bold text-slate-900">
+                    Duration (minutes) <span className="text-red-500 font-medium">*</span>
+                  </label>
+                  <p className="text-xs text-slate-500 mt-0.5 mb-2.5">
+                    Set the time limit for the assessment.
+                  </p>
+                  <div className="grid grid-cols-6 gap-1.5 sm:gap-2">
+                    {[15, 30, 45, 60, 90].map((preset) => {
+                      const isSelected = !isCustomDuration && config.duration === preset;
+                      return (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => {
+                            setIsCustomDuration(false);
+                            setConfig({ ...config, duration: preset });
+                          }}
+                          className={cn(
+                            'h-11 rounded-xl border text-sm font-medium transition-all flex items-center justify-center cursor-pointer',
+                            isSelected
+                              ? 'border-[#2dd4bf] bg-[#f0fdfa] text-[#0d9488] font-bold ring-1 ring-[#2dd4bf]'
+                              : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-slate-700'
+                          )}
+                        >
+                          {preset}
+                        </button>
+                      );
+                    })}
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomDuration(true)}
+                      className={cn(
+                        'h-11 rounded-xl border text-xs sm:text-sm font-medium transition-all flex items-center justify-center cursor-pointer',
+                        isCustomDuration
+                          ? 'border-[#2dd4bf] bg-[#f0fdfa] text-[#0d9488] font-bold ring-1 ring-[#2dd4bf]'
+                          : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-slate-700'
+                      )}
+                    >
+                      Custom
+                    </button>
+                  </div>
+
+                  {isCustomDuration && (
+                    <div className="mt-2.5 flex items-center gap-2 animate-fade-in">
+                      <input
+                        type="number"
+                        min={5}
+                        max={180}
+                        placeholder="Minutes"
+                        value={config.duration}
+                        onChange={(e) => setConfig({ ...config, duration: Math.max(5, parseInt(e.target.value) || 5) })}
+                        className="h-9 w-28 px-3 rounded-lg border border-brand-300 bg-white text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                      />
+                      <span className="text-xs text-slate-500 font-medium">minutes (5 – 180)</span>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-slate-400 mt-2 flex items-center gap-1.5 font-normal">
+                    <Clock className="h-3.5 w-3.5 text-slate-400" />
+                    <span>Recommended: 15 – 90 minutes</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Two Column Row 2: Passing Score & Difficulty Level */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-1">
+                {/* Passing Score Slider */}
+                <div>
+                  <label className="block text-sm font-bold text-slate-900">
+                    Passing Score (%) <span className="text-red-500 font-medium">*</span>
+                  </label>
+                  <p className="text-xs text-slate-500 mt-0.5 mb-2.5">
+                    Minimum score required to pass.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 relative">
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        step={5}
+                        value={config.passingScore}
+                        onChange={(e) => setConfig({ ...config, passingScore: parseInt(e.target.value) || 70 })}
+                        className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-[#0d9488]"
+                        style={{
+                          background: `linear-gradient(to right, #0d9488 ${config.passingScore}%, #e2e8f0 ${config.passingScore}%)`,
+                        }}
+                      />
+                      <div className="flex justify-between text-[11px] text-slate-400 mt-2 px-0.5 font-medium">
+                        <span>0</span>
+                        <span>25</span>
+                        <span>50</span>
+                        <span>75</span>
+                        <span>100</span>
+                      </div>
+                    </div>
+                    <div className="h-10 px-3.5 rounded-xl border border-slate-200 bg-white flex items-center gap-1.5 flex-shrink-0 shadow-xs">
+                      <span className="text-sm font-bold text-slate-900">{config.passingScore}</span>
+                      <span className="text-xs text-slate-400 font-medium">%</span>
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Passing Score (%)</label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={config.passingScore}
-                      onChange={(e) => setConfig({ ...config, passingScore: parseInt(e.target.value) || 70 })}
-                      className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20 transition-all"
-                    />
+
+                {/* Difficulty Level Segmented Buttons */}
+                <div>
+                  <label className="block text-sm font-bold text-slate-900">
+                    Difficulty Level <span className="text-red-500 font-medium">*</span>
+                  </label>
+                  <p className="text-xs text-slate-500 mt-0.5 mb-2.5">
+                    Select the overall difficulty for questions.
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['easy', 'mixed', 'hard'] as const).map((lvl) => {
+                      const isSelected = config.difficulty === lvl;
+                      const label = lvl.charAt(0).toUpperCase() + lvl.slice(1);
+                      return (
+                        <button
+                          key={lvl}
+                          type="button"
+                          onClick={() => setConfig({ ...config, difficulty: lvl })}
+                          className={cn(
+                            'h-11 rounded-xl border text-sm font-medium transition-all flex items-center justify-center cursor-pointer',
+                            isSelected
+                              ? 'border-[#2dd4bf] bg-[#f0fdfa] text-[#0d9488] font-bold ring-1 ring-[#2dd4bf]'
+                              : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-slate-700'
+                          )}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
                   </div>
-                  <Select label="Difficulty" value={config.difficulty} onChange={(e) => setConfig({ ...config, difficulty: e.target.value as typeof config.difficulty })}>
-                    <option value="mixed">Mixed</option>
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
-                  </Select>
+                  <p className="text-xs text-slate-400 mt-2 font-normal">
+                    {config.difficulty === 'mixed' && 'Mixed includes a balance of easy, medium, and hard questions.'}
+                    {config.difficulty === 'easy' && 'Easy focuses on foundational recall and understanding.'}
+                    {config.difficulty === 'hard' && 'Hard includes complex multi-step application and reasoning.'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -381,16 +554,39 @@ export function AssessmentCreate() {
       </Card>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={() => step > 0 ? setStep(step - 1) : navigate('/teacher/assessments')}>
-          <ChevronLeft className="h-4 w-4" /> {step === 0 ? 'Cancel' : 'Back'}
-        </Button>
+      <div className="flex items-center justify-between pt-1">
+        <button
+          type="button"
+          onClick={() => (step > 0 ? setStep(step - 1) : navigate('/teacher/assessments'))}
+          className="h-11 px-5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          <span>{step === 0 ? 'Cancel' : 'Back'}</span>
+        </button>
+
         {step < 5 ? (
-          <Button onClick={() => canProceed() && setStep(step + 1)} disabled={!canProceed() || generating}>
-            {step === 3 && !generated ? 'Generate' : 'Continue'} <ChevronRight className="h-4 w-4" />
-          </Button>
+          <button
+            type="button"
+            onClick={() => canProceed() && setStep(step + 1)}
+            disabled={!canProceed() || generating}
+            className={cn(
+              'h-11 px-6 rounded-xl text-white font-medium text-sm shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer',
+              'bg-[#0d9488] hover:bg-[#0f766e] active:bg-[#115e59]',
+              (!canProceed() || generating) && 'opacity-50 cursor-not-allowed pointer-events-none'
+            )}
+          >
+            <span>{step === 3 && !generated ? 'Generate' : 'Continue'}</span>
+            <ChevronRight className="h-4 w-4" />
+          </button>
         ) : (
-          <Button onClick={() => navigate('/teacher/assessments')}><Send className="h-4 w-4" /> Publish Assessment</Button>
+          <button
+            type="button"
+            onClick={() => navigate('/teacher/assessments')}
+            className="h-11 px-6 rounded-xl bg-[#0d9488] hover:bg-[#0f766e] active:bg-[#115e59] text-white font-medium text-sm shadow-xs flex items-center gap-2 transition-colors cursor-pointer"
+          >
+            <Send className="h-4 w-4" />
+            <span>Publish Assessment</span>
+          </button>
         )}
       </div>
     </div>
