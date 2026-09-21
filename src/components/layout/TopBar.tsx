@@ -56,7 +56,10 @@ export function TopBar({ onMenuClick }: TopBarProps) {
   };
 
   const breadcrumbs = [{ label: role.charAt(0).toUpperCase() + role.slice(1), path: `/${role}` }];
-  if (currentPath !== `/${role}`) {
+  if (role === 'teacher' && currentPath.startsWith('/teacher/assessments/') && currentPath !== '/teacher/assessments/create') {
+    breadcrumbs.push({ label: 'Results & Analytics', path: '/teacher/results' });
+    breadcrumbs.push({ label: 'Assessment Results', path: currentPath });
+  } else if (currentPath !== `/${role}`) {
     breadcrumbs.push({ label: title, path: currentPath });
   }
 

@@ -120,22 +120,36 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                     to={item.to}
                     end={item.to === `/${role}`}
                     onClick={onClose}
-                    className={({ isActive }) =>
-                      cn(
+                    className={({ isActive }) => {
+                      const isAssessmentResultsPage = location.pathname.startsWith('/teacher/assessments/') && location.pathname !== '/teacher/assessments/create';
+                      let active = isActive;
+                      if (isAssessmentResultsPage) {
+                        if (item.to === '/teacher/results') active = true;
+                        if (item.to === '/teacher/assessments') active = false;
+                      }
+                      return cn(
                         'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 group',
-                        isActive
+                        active
                           ? 'bg-brand-50 text-brand-700'
                           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                      )
-                    }
+                      );
+                    }}
                   >
-                    {({ isActive }) => (
-                      <>
-                        <item.icon className={cn('h-4.5 w-4.5 flex-shrink-0', isActive ? 'text-brand-600' : 'text-slate-400 group-hover:text-slate-600')} />
-                        <span className="flex-1">{item.label}</span>
-                        {isActive && <ChevronRight className="h-3.5 w-3.5 text-brand-500" />}
-                      </>
-                    )}
+                    {({ isActive }) => {
+                      const isAssessmentResultsPage = location.pathname.startsWith('/teacher/assessments/') && location.pathname !== '/teacher/assessments/create';
+                      let active = isActive;
+                      if (isAssessmentResultsPage) {
+                        if (item.to === '/teacher/results') active = true;
+                        if (item.to === '/teacher/assessments') active = false;
+                      }
+                      return (
+                        <>
+                          <item.icon className={cn('h-4.5 w-4.5 flex-shrink-0', active ? 'text-brand-600' : 'text-slate-400 group-hover:text-slate-600')} />
+                          <span className="flex-1">{item.label}</span>
+                          {active && <ChevronRight className="h-3.5 w-3.5 text-brand-500" />}
+                        </>
+                      );
+                    }}
                   </NavLink>
                 ))}
               </div>
