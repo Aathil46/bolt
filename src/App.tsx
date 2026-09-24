@@ -27,6 +27,8 @@ import { PrincipalClasses } from '@/pages/principal/PrincipalClasses';
 import { PrincipalTeachers } from '@/pages/principal/PrincipalTeachers';
 import { PrincipalAssessments } from '@/pages/principal/PrincipalAssessments';
 import { PrincipalInsights } from '@/pages/principal/PrincipalInsights';
+import { PrincipalWeakStudents } from '@/pages/principal/PrincipalWeakStudents';
+import { PrincipalInterventions } from '@/pages/principal/PrincipalInterventions';
 
 function App() {
   return (
@@ -63,6 +65,8 @@ function App() {
             <Route path="/principal/classes" element={<PrincipalClasses />} />
             <Route path="/principal/teachers" element={<PrincipalTeachers />} />
             <Route path="/principal/assessments" element={<PrincipalAssessments />} />
+            <Route path="/principal/weak-students" element={<PrincipalWeakStudents />} />
+            <Route path="/principal/interventions" element={<PrincipalInterventions />} />
             <Route path="/principal/insights" element={<PrincipalInsights />} />
           </Route>
 

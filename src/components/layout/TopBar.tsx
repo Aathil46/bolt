@@ -33,6 +33,8 @@ const pageTitles: Record<string, string> = {
   '/principal/classes': 'Class Performance',
   '/principal/teachers': 'Teacher Performance',
   '/principal/assessments': 'Assessment Results',
+  '/principal/weak-students': 'Weak Students',
+  '/principal/interventions': 'Action & Interventions',
   '/principal/insights': 'AI Review',
 };
 

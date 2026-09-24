@@ -64,6 +64,8 @@ const navByRole: Record<Role, { section: string; items: NavItem[] }[]> = {
         { to: '/principal/classes', label: 'Class Performance', icon: School },
         { to: '/principal/teachers', label: 'Teacher Performance', icon: UserCog },
         { to: '/principal/assessments', label: 'Assessment Results', icon: ClipboardPen },
+        { to: '/principal/weak-students', label: 'Weak Students', icon: AlertCircle, badge: '14' },
+        { to: '/principal/interventions', label: 'Interventions', icon: Target },
         { to: '/principal/insights', label: 'AI Review', icon: Sparkles },
       ],
     },
@@ -145,7 +147,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                       return (
                         <>
                           <item.icon className={cn('h-4.5 w-4.5 flex-shrink-0', active ? 'text-brand-600' : 'text-slate-400 group-hover:text-slate-600')} />
-                          <span className="flex-1">{item.label}</span>
+                          <span className="flex-1 truncate">{item.label}</span>
+                          {item.badge && (
+                            <span className="px-1.5 py-0.5 rounded-full text-2xs font-bold bg-error-50 text-error-600 border border-error-200">
+                              {item.badge}
+                            </span>
+                          )}
                           {active && <ChevronRight className="h-3.5 w-3.5 text-brand-500" />}
                         </>
                       );
