@@ -4,7 +4,7 @@ import { useApp } from '@/context/AppContext';
 import {
   LayoutDashboard, Users, FileText, ClipboardPen, BarChart3,
   Lightbulb, GraduationCap, Building2, BookOpen, Settings,
-  Sparkles, ChevronRight, School, UserCog, LineChart,
+  Sparkles, ChevronRight, School, UserCog, LineChart, AlertCircle, Target,
 } from 'lucide-react';
 import type { Role } from '@/types';
 
