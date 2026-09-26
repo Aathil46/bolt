@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useApp } from '@/context/AppContext';
 import { Avatar } from '@/components/ui/Avatar';
-import { Dropdown, DropdownItem, DropdownSeparator, DropdownLabel } from '@/components/ui/Dropdown';
+import { Dropdown, DropdownItem, DropdownSeparator } from '@/components/ui/Dropdown';
 import {
   Bell, Menu, Search, Settings, LogOut, User as UserIcon,
   GraduationCap, BookOpen, Building2, ChevronRight, Sparkles,
@@ -43,19 +42,12 @@ interface TopBarProps {
 }
 
 export function TopBar({ onMenuClick }: TopBarProps) {
-  const { user, role, setRole } = useApp();
+  const { user, role } = useApp();
   const location = useLocation();
-  const navigate = useNavigate();
-  const [notifOpen, setNotifOpen] = useState(false);
 
   const currentPath = location.pathname;
   const title = pageTitles[currentPath] || 'Dashboard';
   const unreadCount = notifications.filter(n => !n.read).length;
-
-  const handleRoleSwitch = (newRole: Role) => {
-    setRole(newRole);
-    navigate(`/${newRole}`);
-  };
 
   const breadcrumbs = [{ label: role.charAt(0).toUpperCase() + role.slice(1), path: `/${role}` }];
   if (role === 'teacher' && currentPath.startsWith('/teacher/assessments/') && currentPath !== '/teacher/assessments/create') {
@@ -155,16 +147,9 @@ export function TopBar({ onMenuClick }: TopBarProps) {
               <p className="text-xs text-slate-500">{user.email}</p>
             </div>
             <DropdownSeparator />
-            <DropdownLabel>Switch Role</DropdownLabel>
-            {(Object.keys(roleSwitchLabels) as Role[]).map(r => {
-              const rc = roleSwitchLabels[r];
-              return (
-                <DropdownItem key={r} onClick={() => handleRoleSwitch(r)} icon={<rc.icon className="h-4 w-4" />}>
-                  <span className="flex-1 text-left">{rc.label}</span>
-                  {r === role && <span className="h-2 w-2 rounded-full bg-brand-500" />}
-                </DropdownItem>
-              );
-            })}
+            <div className="px-3 py-2 text-xs text-slate-500">
+              Signed in as {roleSwitchLabels[role].label}
+            </div>
             <DropdownSeparator />
             <DropdownItem icon={<UserIcon className="h-4 w-4" />}>Profile</DropdownItem>
             <DropdownItem icon={<Settings className="h-4 w-4" />}>Settings</DropdownItem>
